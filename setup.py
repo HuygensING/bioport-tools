@@ -3,9 +3,11 @@
 
 from distutils.core import setup
 
+__version__ = "0.1.2"
+
 setup(
     name="gerbrandyutils",
-    version="0.1.0",
+    version=__version__,
     description='utility functions and classes common to all projects',
     packages=['gerbrandyutils'],
     )

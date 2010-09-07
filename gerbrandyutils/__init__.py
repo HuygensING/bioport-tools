@@ -5,6 +5,9 @@ import hotshot
 import tempfile
 import urllib
 import urlparse
+import os
+import subprocess
+import warnings
 try:
     import pstats
 except ImportError:
@@ -80,4 +83,17 @@ def normalize_url(s, charset='utf-8'):
     qs = urllib.quote_plus(qs, ':&=')
     return urlparse.urlunsplit((scheme, netloc, path, qs, anchor))
 
+
+def sh(cmdline):
+    """run cmd in a subprocess and return its output.
+    raises RuntimeError on error.
+    """
+    p = subprocess.Popen(cmdline, shell=1, stdout=subprocess.PIPE,
+                                           stderr=subprocess.PIPE)
+    stdout, stderr = p.communicate()
+    if p.returncode != 0:
+        raise RuntimeError(stderr)
+    if stderr:
+        warnings.warn(stderr, RuntimeWarning)
+    return stdout
 

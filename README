@@ -1,4 +1,24 @@
-API:
+API Reference:
 
-- gerbrandyutils.profile: a decorator to profile a callable
-- gerbrandyutils.normalize_url: sanitize urls
+- normalize_url(url, charset='utf8'):
+    Sometimes you get an URL by a user that just isn't a real
+    URL because it contains unsafe characters like ' ' and so on.  This
+    function can fix some of the problems in a similar way browsers
+    handle data entered by the user:
+
+    >>> normalize_url(u'http://de.wikipedia.org/wiki/Elf (Begriffsklärung)')
+    'http://de.wikipedia.org/wiki/Elf%20%28Begriffskl%C3%A4rung%29'
+
+   :param charset: The target charset for the URL if the url was
+                   given as unicode string.
+
+
+- sh(cmd)
+    run cmd in a subprocess and return its output.
+    Same effect as running the command in the shell.
+    raises RuntimeError on error.
+
+
+- profile(sort=('time', 'calls'), lines=30, strip_dirs=False)
+    A decorator to profile a callable.
+  

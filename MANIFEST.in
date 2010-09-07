@@ -1,0 +1,5 @@
+include HISTORY README MANIFEST MANIFEST.in
+recursive-include gerbrandyutils *
+recursive-include test *
+global-exclude *.pyc *.pyo *.exe *.swp 
+
