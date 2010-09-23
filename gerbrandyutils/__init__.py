@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding=utf8
 
-import hotshot
+import cProfile
 import tempfile
 import urllib
 import urlparse
@@ -15,53 +15,67 @@ except ImportError:
 
 
 if pstats is not None:
-    def profile(sort=('time', 'calls'), lines=30, strip_dirs=False):
-        """A decorator which profiles a callable.
 
+    def profile(sort='cumulative', lines=50, strip_dirs=False):
+        """A decorator which profiles a callable.
         Example usage:
 
-        >>> class Foo:
-        ...
-        ...     @profile()
-        ...     def bar(self):
-        ...          return "ciao"
+        >>> @profile
+        ... def factorial(n):
+        ...     n = abs(int(n))
+        ...     if n < 1: 
+        ...             n = 1
+        ...     x = 1
+        ...     for i in range(1, n + 1):
+        ...             x = i * x
+        ...     return x
         ... 
-        >>> Foo().bar()
-                 1 function calls in 0.000 CPU seconds
+        >>> factorial(5)
+        Thu Jul 15 20:58:21 2010    /tmp/tmpIDejr5
 
-           Ordered by: cumulative time
+                 4 function calls in 0.000 CPU seconds
+
+           Ordered by: internal time, call count
 
            ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-                1    0.000    0.000    0.000    0.000 <stdin>:2(bar)
-                0    0.000             0.000          profile:0(profiler)
+                1    0.000    0.000    0.000    0.000 profiler.py:120(factorial)
+                1    0.000    0.000    0.000    0.000 {range}
+                1    0.000    0.000    0.000    0.000 {abs}
+                1    0.000    0.000    0.000    0.000 {method 'disable' of '_lsprof.Profiler' objects}
 
-
-        'ciao'
-        >>> 
+        120
+        >>>
         """
-        def _outer(f):
-            def _inner(*args, **kwargs):
-                #
+        def outer(fun):
+            def inner(*args, **kwargs):
                 file = tempfile.NamedTemporaryFile()
-                prof = hotshot.Profile(file.name)
+                prof = cProfile.Profile()
                 try:
-                    ret = prof.runcall(f, *args, **kwargs)
-                finally:
-                    prof.close()
+                    ret = prof.runcall(fun, *args, **kwargs)
+                except:
+                    file.close()
+                    raise
 
+                prof.dump_stats(file.name)
                 stats = pstats.Stats(file.name)
                 if strip_dirs:
                     stats.strip_dirs()
-                if isinstance(sort, tuple):
+                if isinstance(sort, (tuple, list)):
                     stats.sort_stats(*sort)
                 else:
                     stats.sort_stats(sort)
                 stats.print_stats(lines)
 
+                file.close()
                 return ret
-            return _inner
+            return inner
 
-        return _outer
+        # in case this is defined as "@profile" instead of "@profile()"
+        if hasattr(sort, '__call__'):
+            fun = sort
+            sort = 'cumulative'
+            outer = outer(fun)
+        return outer
 
 
 def normalize_url(s, charset='utf-8'):
