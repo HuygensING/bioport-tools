@@ -13,6 +13,8 @@ try:
 except ImportError:
     pstats = None  # might be missing on some Linuxes
 
+import psyco
+
 
 if pstats is not None:
 
@@ -76,6 +78,26 @@ if pstats is not None:
             sort = 'cumulative'
             outer = outer(fun)
         return outer
+
+
+# TODO - can be extended to support python 2.6 class decorators
+def optimize(fun):
+    """Decorator to optimize a callable by using psyco.
+
+    >>> @optimize
+    ... def sum(a, b):
+    ...     return a + b
+    ...
+    >>> sum(1, 2)
+    3
+    >>>
+    """   
+    def outer(fun):
+        def inner(*args, **kwargs):
+            psyco.bind(fun)
+            return fun(*args, **kwargs)
+        return inner
+    return outer(fun)
 
 
 def normalize_url(s, charset='utf-8'):
