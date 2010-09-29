@@ -3,7 +3,11 @@
 import unittest
 import time
 
-from gerbrandyutils import sh, normalize_url, optimize
+from gerbrandyutils import sh, normalize_url, 
+try:
+    from gerbrandyutils import optimize
+except ImportError:
+    optimize = None
 
 
 class TestCase(unittest.TestCase):
@@ -17,27 +21,28 @@ class TestCase(unittest.TestCase):
         self.assertEqual(nu('http://google.it'), 'http://google.it')
         self.assertEqual(nu('http://google.it?a=1&b=2'), 'http://google.it?a=1&b=2')
 
-    def test_optimize(self):
+    if optimize is not None:
+        def test_optimize(self):
 
-        def foo():
-            L = []
-            for i in range(100):
-                L.append(i)
-        t1 = time.time()
-        for x in range(10000):
-            foo()
-        normal_time = time.time() - t1
+            def foo():
+                L = []
+                for i in range(100):
+                    L.append(i)
+            t1 = time.time()
+            for x in range(10000):
+                foo()
+            normal_time = time.time() - t1
 
-        @optimize
-        def foo():
-            L = []
-            for i in range(100):
-                L.append(i)
-        t1 = time.time()
-        for x in range(10000):
-            foo()
-        optimized_time = time.time() - t1
-        self.assertTrue(optimized_time < normal_time)
+            @optimize
+            def foo():
+                L = []
+                for i in range(100):
+                    L.append(i)
+            t1 = time.time()
+            for x in range(10000):
+                foo()
+            optimized_time = time.time() - t1
+            self.assertTrue(optimized_time < normal_time)
     
         
 def test_suite():
@@ -49,5 +54,4 @@ def test_suite():
 
 if __name__ == "__main__":
     unittest.main(defaultTest='test_suite')    
-
 
