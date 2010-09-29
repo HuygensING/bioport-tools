@@ -10,6 +10,7 @@ setup(
     version=__version__,
     description='utility functions and classes common to all projects',
     packages=['gerbrandyutils'],
-    install_requires=["psyco"],
+# commented as it doesn't get installed on 64 bit sytsems
+#    install_requires=["psyco"],
     )
 
