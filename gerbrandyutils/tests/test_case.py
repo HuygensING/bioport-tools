@@ -3,7 +3,7 @@
 import unittest
 import time
 
-from gerbrandyutils import sh, normalize_url, 
+from gerbrandyutils import sh, normalize_url
 try:
     from gerbrandyutils import optimize
 except ImportError:
@@ -43,8 +43,8 @@ class TestCase(unittest.TestCase):
                 foo()
             optimized_time = time.time() - t1
             self.assertTrue(optimized_time < normal_time)
-    
-        
+            
+
 def test_suite():
     test_suite = unittest.TestSuite()
     tests = [TestCase]
