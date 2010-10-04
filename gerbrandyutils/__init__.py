@@ -57,9 +57,9 @@ if pstats is not None:
                 prof = cProfile.Profile()
                 try:
                     ret = prof.runcall(fun, *args, **kwargs)
-                except Exception, e:
+                except:
                     file.close()
-                    raise e
+                    raise
 
                 prof.dump_stats(file.name)
                 stats = pstats.Stats(file.name)
