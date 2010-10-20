@@ -3,7 +3,7 @@
 import unittest
 import time
 
-from gerbrandyutils import sh, normalize_url
+from gerbrandyutils import sh, normalize_url, hilite
 try:
     from gerbrandyutils import optimize
 except ImportError:
@@ -14,6 +14,7 @@ class TestCase(unittest.TestCase):
 
     def test_sh(self):
         stdout = sh("ls")
+        self.assertTrue(stdout)
         self.assertRaises(RuntimeError, sh, 'badcmd')
           
     def test_normalize_url(self):
@@ -44,6 +45,12 @@ class TestCase(unittest.TestCase):
             optimized_time = time.time() - t1
             self.assertTrue(optimized_time < normal_time)
             
+    def test_hilite(self):
+        hilite("foo", ok=1)
+        hilite("foo", ok=1, bold=1)
+        hilite("foo", ok=0)
+        hilite("foo", ok=0, bold=1)
+
 
 def test_suite():
     test_suite = unittest.TestSuite()

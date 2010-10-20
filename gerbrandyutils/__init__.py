@@ -6,6 +6,7 @@ import tempfile
 import urllib
 import urlparse
 import os
+import sys
 import subprocess
 import warnings
 try:
@@ -136,4 +137,19 @@ def sh(cmdline):
     if stderr:
         warnings.warn(stderr, RuntimeWarning)
     return stdout
+
+
+def hilite(string, ok=True, bold=False):
+    """Return an highlighted version of 'string'."""
+    if not sys.stdout.isatty():
+        return string
+    attr = []
+    if ok:  # green
+        attr.append('32')
+    else:  # red
+        attr.append('31')
+    if bold:
+        attr.append('1')
+    return '\x1b[%sm%s\x1b[0m' % (';'.join(attr), string)
+
 
