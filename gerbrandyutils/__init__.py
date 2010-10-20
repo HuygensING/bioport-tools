@@ -146,10 +146,9 @@ def hilite(string, ok=True, bold=False):
     attr = []
     if ok:  # green
         attr.append('32')
-    else:  # red
+    elif ok != -1:  # red
         attr.append('31')
     if bold:
         attr.append('1')
     return '\x1b[%sm%s\x1b[0m' % (';'.join(attr), string)
-
 
