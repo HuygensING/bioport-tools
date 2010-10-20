@@ -4,6 +4,7 @@ import unittest
 import time
 
 from gerbrandyutils import sh, normalize_url, hilite
+from gerbrandyutils.compat import all, any, namedtuple
 try:
     from gerbrandyutils import optimize
 except ImportError:
@@ -50,6 +51,22 @@ class TestCase(unittest.TestCase):
         hilite("foo", ok=1, bold=1)
         hilite("foo", ok=0)
         hilite("foo", ok=0, bold=1)
+        
+    def test_compat_all(self):
+        self.assertTrue(all([1, 1, 1, 1]))
+        self.assertFalse(all([1, 1, 1, 0]))
+
+    def test_compat_any(self):
+        self.assertTrue(any([1, 1, 1, 1]))
+        self.assertTrue(any([1, 1, 1, 0]))
+        self.assertFalse(all([0, 0, 0, 0]))
+        
+    def test_compat_namedtuple(self):
+        init = namedtuple('meminfo', 'rss vms')
+        nt = init(1, 2)
+        self.assertEqual(nt[0], nt.rss)
+        self.assertEqual(nt[1], nt.vms)
+        self.assertEqual(str(nt), "meminfo(rss=1, vms=2)")
 
 
 def test_suite():

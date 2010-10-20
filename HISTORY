@@ -1,3 +1,6 @@
+0.1.5
+add compat module within all(), any() and namedtuple() functions.
+
 0.1.4
 add hilite()
 

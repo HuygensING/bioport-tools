@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding=utf8
 
+__all__ = ["normalize_url", "sh", "hilite", "compat"]
+
 import cProfile
 import tempfile
 import urllib
@@ -18,6 +20,8 @@ try:
     import psyco
 except ImportError:
     psyco = None
+
+import compat  # pushes compat namespace up at this level
 
 
 if pstats is not None:
