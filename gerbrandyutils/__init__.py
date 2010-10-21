@@ -3,7 +3,6 @@
 
 __all__ = ["normalize_url", "sh", "hilite", "compat"]
 
-import cProfile
 import tempfile
 import urllib
 import urlparse
@@ -12,9 +11,10 @@ import sys
 import subprocess
 import warnings
 try:
+    import cProfile
     import pstats
 except ImportError:
-    pstats = None  # might be missing on some Linuxes
+    cProfile = None  # fix it with "sudo apt-get install python-profiler"
 
 try:
     import psyco
@@ -24,7 +24,7 @@ except ImportError:
 import compat  # pushes compat namespace up at this level
 
 
-if pstats is not None:
+if cProfile is not None:
 
     def profile(sort='cumulative', lines=50, strip_dirs=False):
         """A decorator which profiles a callable.
