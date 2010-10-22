@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # coding=utf8
 
-__all__ = ["normalize_url", "sh", "hilite", "compat"]
+__all__ = ["normalize_url", "sh", "hilite", "run_in_thread"
+           "compat"]
 
 import tempfile
 import urllib
@@ -10,6 +11,8 @@ import os
 import sys
 import subprocess
 import warnings
+import threading
+
 try:
     import cProfile
     import pstats
@@ -155,4 +158,30 @@ def hilite(string, ok=True, bold=False):
     if bold:
         attr.append('1')
     return '\x1b[%sm%s\x1b[0m' % (';'.join(attr), string)
+
+
+def run_in_thread(fn):
+    """Decorator to run a callable in a thread returning the 
+    thread instance.
+    Note: completely *NOT* thread safe.
+
+    >>> import time
+    >>>
+    >>> @run_in_thread
+    ... def foo():
+    ...     time.sleep(100)
+    ...     return "done"
+    ...
+    >>> t = foo()
+    >>> t.isAlive()
+    True
+    >>> t.join()  # waits for thread completion
+    >>> t.isAlive()
+    False
+    """
+    def run(*k, **kw):
+        t = threading.Thread(target=fn, args=k, kwargs=kw)
+        t.start()
+        return t
+    return run
 

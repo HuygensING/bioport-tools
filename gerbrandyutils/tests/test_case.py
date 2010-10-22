@@ -2,8 +2,9 @@
 
 import unittest
 import time
+import threading
 
-from gerbrandyutils import sh, normalize_url, hilite
+from gerbrandyutils import sh, normalize_url, hilite, run_in_thread
 from gerbrandyutils.compat import all, any, namedtuple
 try:
     from gerbrandyutils import optimize
@@ -67,6 +68,21 @@ class TestCase(unittest.TestCase):
         self.assertEqual(nt[0], nt.rss)
         self.assertEqual(nt[1], nt.vms)
         self.assertEqual(str(nt), "meminfo(rss=1, vms=2)")
+        
+    def test_run_in_thread(self):
+        flag = []
+        
+        @run_in_thread
+        def foo():
+            time.sleep(0.1)
+            flag.append(None)
+           
+        t = foo()
+        self.assertTrue(isinstance, threading.Thread)
+        self.assertTrue(t.isAlive)
+        t.join()
+        self.assertFalse(t.isAlive())
+        self.assertEqual(flag, [None])
 
 
 def test_suite():
