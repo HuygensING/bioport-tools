@@ -12,13 +12,37 @@ API Reference:
    :param charset: The target charset for the URL if the url was
                    given as unicode string.
 
+- optimize
+    Decorator to run a callable through psyco:
+   
+        >>> @optimize
+        ... def sum(a, b):
+        ...     return a + b
+        ...
+        >>> sum(1, 2)
+        3
 
 - sh(cmd)
     run cmd in a subprocess and return its output.
     Same effect as running the command in the shell.
     raises RuntimeError on error.
 
+- hilite(string, ok=True, bold=False):
+    Return an highlighted version of 'string'.
 
 - profile(sort=('time', 'calls'), lines=30, strip_dirs=False)
     A decorator to profile a callable.
-  
+
+- run_in_thread(*args, **kwargs)
+    A decorator to run a function in a thread
+    
+- ScriptBase
+    A base class for import scripts.
+    
+- compat module:
+    import it as such:
+    >>> from gerbrandyutils.compat import *
+    ...and you'll have all(), any() and collections.namedtuple on python
+    versions < 2.6.
+    
+    

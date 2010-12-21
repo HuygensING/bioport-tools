@@ -12,6 +12,9 @@ import sys
 import subprocess
 import warnings
 import threading
+import tarfile
+import shutil
+import time
 
 try:
     import cProfile
@@ -25,7 +28,6 @@ except ImportError:
     psyco = None
 
 import compat  # pushes compat namespace up at this level
-
 
 if cProfile is not None:
 
@@ -148,8 +150,6 @@ def sh(cmdline):
 
 def hilite(string, ok=True, bold=False):
     """Return an highlighted version of 'string'."""
-    if not sys.stdout.isatty():
-        return string
     attr = []
     if ok:  # green
         attr.append('32')
@@ -158,6 +158,9 @@ def hilite(string, ok=True, bold=False):
     if bold:
         attr.append('1')
     return '\x1b[%sm%s\x1b[0m' % (';'.join(attr), string)
+    
+if not sys.stdout.isatty():
+    hilite = lambda string, ok=True, bold=False: string
 
 
 def run_in_thread(fn):
@@ -184,4 +187,86 @@ def run_in_thread(fn):
         t.start()
         return t
     return run
+
+
+class ScriptBase(object):
+    """A base class which can be used with import scripts.
+    It provides facilities to:
+    
+     - print progress
+     - print results (coloured)
+     - gracefully add skipped imports during script iteration
+     - compress generated files
+    """
+    compress_on_exit = True
+
+    def __init__(self):
+        self._skipped = 0
+        self.total = 0
+        self._imported = 0
+        self._exited = False
+        self._lowercase_names = set()
+        self._skip_reasons = []
+        self._started = time.time()
+        if os.path.isdir('out'):
+            shutil.rmtree('out')
+        os.mkdir('out')       
+
+    def __del__(self):
+        if not self._exited:
+            self.tear_down()
+
+    def tear_down(self):
+        self._exited = True
+        elapsed = "%0.3f" % (time.time() - self._started)
+        hl = hilite
+        print "total:%s imported:%s skipped=%s in %s secs" \
+           % (hl(self.total), hl(self._imported), hl(self._skipped), hl(elapsed))
+        if self._skip_reasons:
+            print "skip reasons:"
+            for x in set(self._skip_reasons):
+                print "(%s) %s" % (hl(self._skip_reasons.count(x), 0), x)
+        if self.compress_on_exit:
+            compress_output_files()
+
+    def skip(self, reason=""):
+        self._skipped += 1
+        if reason:
+            self._skip_reasons.append(reason)
+
+    def name_already_processed(self, name):
+        """Return True if the name of the person has already been
+        processed to avoid duplicate persons.
+        """
+        if not name:
+            return True
+        lowercased_name = name.lower()
+        if lowercased_name in self._lowercase_names:
+            return True
+        else:
+            self._lowercase_names.add(lowercased_name)
+            return False
+        
+    def print_progress(self, index, name=None):
+        s = "processing: %s/%s" %(index, self.total)
+        if name is not None:
+            s += " - " + repr(name)
+        print s
+       
+    def write_file(self, bdes, id):
+        #index = str(index).zfill(len(str(self.total)))
+        filename = os.path.join('out', "%s.xml" % id)
+        bdes.to_file(filename)
+        self._imported += 1
+        
+        #from lxml import etree
+        #namestring = bdes.get_namen()[0].to_string()
+        #etree.fromstring(namestring)
+
+    @staticmethod
+    def compress_output_files():
+        tar = tarfile.open("out.tar.gz", "w:gz")
+        for name in os.listdir("out"):
+            tar.add("out/" + name, arcname=name)
+        tar.close()
 
