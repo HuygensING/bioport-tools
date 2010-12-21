@@ -1,8 +1,14 @@
 #!/usr/bin/env python
 # coding=utf8
 
-__all__ = ["normalize_url", "sh", "hilite", "run_in_thread"
-           "compat"]
+__all__ = [# --- modules
+           "compat",
+           # --- functions
+            "normalize_url", "sh", "hilite", 
+           # --- decorators
+           "profile", "optimize", "run_in_thread",
+           # --- classes           
+           "ScriptBase"]
 
 import tempfile
 import urllib
@@ -196,14 +202,16 @@ class ScriptBase(object):
      - print progress
      - print results (coloured)
      - gracefully add skipped imports during script iteration
+     - write files in a safe manner (in case of errors, files are removed
+       before exiting the interpreter)
      - compress generated files
     """
     compress_on_exit = True
     remove_output_dir_on_start = True
 
     def __init__(self):
-        self._skipped = 0
         self.total = 0
+        self._skipped = 0
         self._imported = 0
         self._exited = False
         self._lowercase_names = set()
