@@ -280,7 +280,7 @@ class ScriptBase(object):
 
     @staticmethod
     def safe_remove(self, path):
-        if os.path.isdir(path)
+        if os.path.isdir(path):
             shutil.rmtree(path, ignore_errors=True)
         else:
             try:
