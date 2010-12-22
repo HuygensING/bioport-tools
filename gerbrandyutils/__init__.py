@@ -278,7 +278,7 @@ class ScriptBase(object):
         #namestring = bdes.get_namen()[0].to_string()
         #etree.fromstring(namestring)
 
-    @staticmethod
+    @classmethod
     def safe_remove(self, path):
         if os.path.isdir(path):
             shutil.rmtree(path, ignore_errors=True)
