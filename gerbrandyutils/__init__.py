@@ -195,6 +195,13 @@ def run_in_thread(fn):
     return run
 
 
+
+def make_tarfile(in_dir, out_fn):
+    tar = tarfile.open(out_fn, "w:gz")
+    for name in os.listdir(in_dir):
+        tar.add(os.path.join(in_dir,  name), arcname=name)
+    tar.close()
+    
 class ScriptBase(object):
     """A base class which can be used with import scripts.
     It provides facilities to:
@@ -289,9 +296,8 @@ class ScriptBase(object):
                 pass
     @staticmethod
     def _compress_output_files():
-        tar = tarfile.open("out.tar.gz", "w:gz")
-        for name in os.listdir("out"):
-            tar.add("out/" + name, arcname=name)
-        tar.close()
-
-
+        make_tar_file('out', 'out.tar.gz')
+#        tar = tarfile.open("out.tar.gz", "w:gz")
+#        for name in os.listdir("out"):
+#            tar.add("out/" + name, arcname=name)
+#        tar.close()
