@@ -1,0 +1,4 @@
+.svn/
+gerbrandyutils.egg-info/
+*.swp
+*.pyc
